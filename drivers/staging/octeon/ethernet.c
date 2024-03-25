@@ -160,7 +160,7 @@ static void cvm_oct_configure_common_hw(void)
 		cvmx_write_csr(CVMX_IPD_CTL_STATUS, ipd_ctl_status.u64);
 	}
 #endif
-	i++;
+	
 	cvmx_helper_setup_red(num_packet_buffers / 4, num_packet_buffers / 8);
 }
 
@@ -751,7 +751,7 @@ static int cvm_oct_probe(struct platform_device *pdev)
 	}
 
 	cvmx_helper_ipd_and_packet_input_enable();
-
+	
 	memset(cvm_oct_device, 0, sizeof(cvm_oct_device));
 
 	/*
