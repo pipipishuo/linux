@@ -160,7 +160,7 @@ static void cvm_oct_configure_common_hw(void)
 		cvmx_write_csr(CVMX_IPD_CTL_STATUS, ipd_ctl_status.u64);
 	}
 #endif
-	
+	i++;
 	cvmx_helper_setup_red(num_packet_buffers / 4, num_packet_buffers / 8);
 }
 
