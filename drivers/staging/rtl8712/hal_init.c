@@ -138,7 +138,8 @@ static u8 chk_fwhdr(struct fw_hdr *pfwhdr, u32 ulfilelength)
 	u32	fwhdrsz, fw_sz;
 
 	/* check signature */
-	if ((pfwhdr->signature != 0x8712) && (pfwhdr->signature != 0x8192))
+	if (pfwhdr->signature != 0x8712 &&
+	    pfwhdr->signature != 0x8192)
 		return _FAIL;
 	/* check fw_priv_sze & sizeof(struct fw_priv) */
 	if (pfwhdr->fw_priv_sz != sizeof(struct fw_priv))
