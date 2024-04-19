@@ -59,9 +59,9 @@ char *kstrdup(const char *s, gfp_t gfp)
 		return NULL;
 
 	len = strlen(s) + 1;
-	buf = kmalloc_track_caller(len, gfp);
+	buf = kmalloc_track_caller(len, gfp);//这句没搞明白，涉及到内存那块了，先认为就是分配个内存就行
 	if (buf)
-		memcpy(buf, s, len);
+		memcpy(buf, s, len);//这句好理解
 	return buf;
 }
 EXPORT_SYMBOL(kstrdup);
