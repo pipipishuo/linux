@@ -43,8 +43,10 @@ EXPORT_SYMBOL(kvasprintf);
 const char *kvasprintf_const(gfp_t gfp, const char *fmt, va_list ap)
 {
 	if (!strchr(fmt, '%'))
-		return kstrdup_const(fmt, gfp);
+		//如果啥格式符号也没包含 就把fmt返回去
+		return kstrdup_const(fmt, gfp);  
 	if (!strcmp(fmt, "%s"))
+		//如果只包含了一个%
 		return kstrdup_const(va_arg(ap, const char*), gfp);
 	return kvasprintf(gfp, fmt, ap);
 }
