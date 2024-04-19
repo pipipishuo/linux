@@ -600,6 +600,7 @@ EXPORT_SYMBOL(memset64);
  *
  * You should not use this function to access IO space, use memcpy_toio()
  * or memcpy_fromio() instead.
+ 挺简单的写法  不复杂 就是一个个复制就行
  */
 void *memcpy(void *dest, const void *src, size_t count)
 {
