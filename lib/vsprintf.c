@@ -2540,6 +2540,7 @@ int format_decode(const char *fmt, struct printf_spec *spec)
 			spec->flags |= LEFT;
 		}
 		spec->type = FORMAT_TYPE_NONE;
+		//先是宽度再是精度
 		goto precision;
 	}
 
@@ -2549,6 +2550,7 @@ int format_decode(const char *fmt, struct printf_spec *spec)
 			spec->precision = 0;
 
 		spec->type = FORMAT_TYPE_NONE;
+		//宽度完就是修饰词？
 		goto qualifier;
 	}
 
@@ -2598,17 +2600,21 @@ int format_decode(const char *fmt, struct printf_spec *spec)
 
 precision:
 	/* get the precision */
+	//
 	spec->precision = -1;
 	if (*fmt == '.') {
 		++fmt;
 		if (isdigit(*fmt)) {
+			//类似于.123131这样的？
 			spec->precision = skip_atoi(&fmt);
 			if (spec->precision < 0)
 				spec->precision = 0;
 		} else if (*fmt == '*') {
+			//类似于.*这样的
 			/* it's the next argument */
 			spec->type = FORMAT_TYPE_PRECISION;
-			return ++fmt - start;
+			//返回的是读了多少位
+			return ++fmt - start;  
 		}
 	}
 
@@ -2658,6 +2664,7 @@ qualifier:
 		fallthrough;
 
 	case 'X':
+		//这个我熟
 		spec->base = 16;
 		break;
 
