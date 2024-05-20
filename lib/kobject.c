@@ -63,7 +63,7 @@ static bool kobj_ns_type_is_valid(enum kobj_ns_type type)
 
 	return true;
 }
-
+//只是设置设置flag 应该是后面会用到 也挺合理
 static int create_dir(struct kobject *kobj)
 {
 	const struct kobj_type *ktype = get_ktype(kobj);
@@ -75,6 +75,7 @@ static int create_dir(struct kobject *kobj)
 		return error;
 
 	if (ktype) {
+		//空着留着干吗用？以后用吧
 		error = sysfs_create_groups(kobj, ktype->default_groups);
 		if (error) {
 			sysfs_remove_dir(kobj);
