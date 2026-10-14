@@ -1485,7 +1485,7 @@ static inline struct folio *__readahead_folio(struct readahead_control *ractl)
 	struct folio *folio;
 
 	BUG_ON(ractl->_batch_count > ractl->_nr_pages);
-	ractl->_nr_pages -= ractl->_batch_count;
+	ractl->_nr_pages -= ractl->_batch_count;			//这里也能看出_batch_count的作用  就是记载当前folio的page数量
 	ractl->_index += ractl->_batch_count;
 
 	if (!ractl->_nr_pages) {
@@ -1495,7 +1495,7 @@ static inline struct folio *__readahead_folio(struct readahead_control *ractl)
 
 	folio = xa_load(&ractl->mapping->i_pages, ractl->_index);
 	VM_BUG_ON_FOLIO(!folio_test_locked(folio), folio);
-	ractl->_batch_count = folio_nr_pages(folio);
+	ractl->_batch_count = folio_nr_pages(folio);			//这里也能看出_batch_count的作用
 
 	return folio;
 }

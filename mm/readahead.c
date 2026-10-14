@@ -172,7 +172,7 @@ static void read_pages(struct readahead_control *rac)
 
 	if (aops->readahead) {
 		aops->readahead(rac);
-		/* Clean up the remaining folios. */
+		/* Clean up the remaining folios. */		//删除剩余的？ 莫非只进行了一半？看样子ext4不是这样的
 		while ((folio = readahead_folio(rac)) != NULL) {
 			folio_get(folio);
 			filemap_remove_folio(folio);
@@ -198,7 +198,7 @@ static struct folio *ractl_alloc_folio(struct readahead_control *ractl,
 	struct folio *folio;
 
 	folio = filemap_alloc_folio(gfp_mask, order, NULL);
-	if (folio && ractl->dropbehind)
+	if (folio && ractl->dropbehind)			//这个也得留心观察下
 		__folio_set_dropbehind(folio);
 
 	return folio;
@@ -456,18 +456,19 @@ static unsigned long get_next_ra_size(struct file_ra_state *ra,
  * it approaches max_readahead.
  */
 
+ //这函数目前看还真就是收集并添加
 static inline int ra_alloc_folio(struct readahead_control *ractl, pgoff_t index,
 		pgoff_t mark, unsigned int order, gfp_t gfp)
 {
 	int err;
-	struct folio *folio = ractl_alloc_folio(ractl, gfp, order);
+	struct folio *folio = ractl_alloc_folio(ractl, gfp, order);		
 
 	if (!folio)
 		return -ENOMEM;
 	mark = round_down(mark, 1UL << order);
-	if (index == mark)
+	if (index == mark)//莫非真是提前读？
 		folio_set_readahead(folio);
-	err = filemap_add_folio(ractl->mapping, folio, index, gfp);
+	err = filemap_add_folio(ractl->mapping, folio, index, gfp);		//添加进去
 	if (err) {
 		folio_put(folio);
 		return err;
@@ -478,22 +479,23 @@ static inline int ra_alloc_folio(struct readahead_control *ractl, pgoff_t index,
 	return 0;
 }
 
+//总体来说这个函数就是添加folio并读取的 当然也是尽力的  不能保证要多少有多少
 void page_cache_ra_order(struct readahead_control *ractl,
 		struct file_ra_state *ra)
 {
 	struct address_space *mapping = ractl->mapping;
-	pgoff_t start = readahead_index(ractl);
+	pgoff_t start = readahead_index(ractl);						//这与folio本身的index有什么区别 为什么不用它的 哦 可能说的是这次读所对应的
 	pgoff_t index = start;
 	unsigned int min_order = mapping_min_folio_order(mapping);
-	pgoff_t limit = (i_size_read(mapping->host) - 1) >> PAGE_SHIFT;
+	pgoff_t limit = (i_size_read(mapping->host) - 1) >> PAGE_SHIFT;		//本文件最大的页
 	pgoff_t mark;
 	unsigned int nofs;
 	int err = 0;
-	gfp_t gfp = readahead_gfp_mask(mapping);
+	gfp_t gfp = readahead_gfp_mask(mapping);					//gfp莫非是内存声明标志？
 	unsigned int new_order = ra->order;
 
 	trace_page_cache_ra_order(mapping->host, start, ra);
-	if (!mapping_large_folio_support(mapping)) {
+	if (!mapping_large_folio_support(mapping)) {				//不支持大页folio就拜拜
 		ra->order = 0;
 		goto fallback;
 	}
@@ -506,31 +508,33 @@ void page_cache_ra_order(struct readahead_control *ractl,
 		mark = ULONG_MAX;
 	}
 
-	new_order = min(mapping_max_folio_order(mapping), new_order);
-	new_order = min_t(unsigned int, new_order, ilog2(ra->size));
-	new_order = max(new_order, min_order);
+	//这三句说白了就是找个合适的order 得在mapping最大最小范围内
+	new_order = min(mapping_max_folio_order(mapping), new_order);		//不能你比内存映射中最大的还大
+	new_order = min_t(unsigned int, new_order, ilog2(ra->size));		//再跟这次读取的比一比
+	new_order = max(new_order, min_order);								//咋也得满足最小的要求
 
 	ra->order = new_order;
 
 	/* See comment in page_cache_ra_unbounded() */
 	nofs = memalloc_nofs_save();
-	filemap_invalidate_lock_shared(mapping);
+	filemap_invalidate_lock_shared(mapping);				//这个也值得后续研究
 	/*
 	 * If the new_order is greater than min_order and index is
 	 * already aligned to new_order, then this will be noop as index
 	 * aligned to new_order should also be aligned to min_order.
 	 */
-	ractl->_index = mapping_align_index(mapping, index);
+	ractl->_index = mapping_align_index(mapping, index);		//格式化一下index
 	index = readahead_index(ractl);
+	//从这里开始index就被格式化完了 也铺垫好了上下文
 
-	while (index <= limit) {
+	while (index <= limit) {				//正式确定readahead范围
 		unsigned int order = new_order;
 
 		/* Align with smaller pages if needed */
 		if (index & ((1UL << order) - 1))
 			order = __ffs(index);
-		/* Don't allocate pages past EOF */
-		while (order > min_order && index + (1UL << order) - 1 > limit)
+		/* Don't allocate pages past EOF *///说的很明白  不能超了EOF  看来EOF可能定义的方式不单单只是确定到byte吧 待观察
+		while (order > min_order && index + (1UL << order) - 1 > limit)				//看来这里也是为了解决三个order的问题   注释说的明白了  是不能超限  话说这两个约束够吗？
 			order--;
 		err = ra_alloc_folio(ractl, index, mark, order, gfp);
 		if (err)
@@ -539,7 +543,7 @@ void page_cache_ra_order(struct readahead_control *ractl,
 	}
 
 	read_pages(ractl);
-	filemap_invalidate_unlock_shared(mapping);
+	filemap_invalidate_unlock_shared(mapping);		//退出上下文
 	memalloc_nofs_restore(nofs);
 
 	/*
@@ -554,11 +558,21 @@ fallback:
 	 * ->readahead() may have updated readahead window size so we have to
 	 * check there's still something to read.
 	 */
-	if (ra->size > index - start)
-		do_page_cache_ra(ractl, ra->size - (index - start),
+	if (ra->size > index - start)			//还有富裕是吧
+		do_page_cache_ra(ractl, ra->size - (index - start),			//index是变量
 				 ra->async_size);
 }
 
+/*
+主要考察三个量
+req_size：想要的
+ractl->ra->ra_pages：原本是这次请求最多的页数
+bdi->io_pages:这个设备最大能够允许的io页数
+
+一般情况返回ractl->ra->ra_pages
+但如果if (req_size > max_pages && bdi->io_pages > max_pages) 也就是说需要的和设备允许的都大于ractl->ra->ra_pages 那就返回他两个中最小的  有道理 本来就是返回的最大范围嘛
+但凡ractl->ra->ra_pages比他两个其中一个大 就返回自己的
+*/
 static unsigned long ractl_max_pages(struct readahead_control *ractl,
 		unsigned long req_size)
 {
@@ -567,7 +581,7 @@ static unsigned long ractl_max_pages(struct readahead_control *ractl,
 
 	/*
 	 * If the request exceeds the readahead window, allow the read to
-	 * be up to the optimal hardware IO size
+	 * be up to the optimal hardware IO size  注释说的不太完全
 	 */
 	if (req_size > max_pages && bdi->io_pages > max_pages)
 		max_pages = min(req_size, bdi->io_pages);
@@ -577,8 +591,8 @@ static unsigned long ractl_max_pages(struct readahead_control *ractl,
 void page_cache_sync_ra(struct readahead_control *ractl,
 		unsigned long req_count)
 {
-	pgoff_t index = readahead_index(ractl);
-	bool do_forced_ra = ractl->file && (ractl->file->f_mode & FMODE_RANDOM);
+	pgoff_t index = readahead_index(ractl);				//依旧先拿出index
+	bool do_forced_ra = ractl->file && (ractl->file->f_mode & FMODE_RANDOM);		//待考察
 	struct file_ra_state *ra = ractl->ra;
 	unsigned long max_pages, contig_count;
 	pgoff_t prev_index, miss;
