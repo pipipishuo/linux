@@ -177,7 +177,7 @@ static int ext4_mpage_readpages(struct inode *inode, struct fsverity_info *vi,
 		first_hole = blocks_per_folio;
 		pos = folio_pos(folio);
 		block_in_file = pos >> blkbits;
-		last_block = EXT4_PG_TO_LBLK(inode, folio->index + nr_pages);
+		last_block = EXT4_PG_TO_LBLK(inode, folio->index + nr_pages);			//顺过来了  ra_alloc_folio(ractl, index, mark, order, gfp); 这里赋的值
 		last_block_in_file = (ext4_readpage_limit(inode) +
 				      blocksize - 1) >> blkbits;
 		if (last_block > last_block_in_file)
