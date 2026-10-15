@@ -621,13 +621,13 @@ void page_cache_sync_ra(struct readahead_control *ractl,
 	prev_index = (unsigned long long)ra->prev_pos >> PAGE_SHIFT;
 	/*
 	 * A start of file, oversized read, or sequential cache miss:
-	 * trivial case: (index - prev_index) == 1
-	 * unaligned reads: (index - prev_index) == 0					//看样子也只是做一些ra的参数配置
+	 * trivial case: (index - prev_index) == 1						//这页和下一页
+	 * unaligned reads: (index - prev_index) == 0					//都在一页中   看样子也只是做一些ra的参数配置  
 	 */
 	if (!index || req_count > max_pages || index - prev_index <= 1UL) {
 		ra->start = index;
 		ra->size = get_init_ra_size(req_count, max_pages);
-		ra->async_size = ra->size > req_count ? ra->size - req_count :
+		ra->async_size = ra->size > req_count ? ra->size - req_count :				//大于就保存富裕的  小于呢？小于就保存size的一半   这么看只要这三个值就应该能够保障读取  这么看async_size是跟预读有关的
 							ra->size >> 1;
 		goto readit;
 	}

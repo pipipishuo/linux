@@ -5849,7 +5849,7 @@ static void kill_css_finish_work_fn(struct work_struct *work)
 	css_put(css);
 }
 
-//能表明cgroup_subsys_state cgroup_subsys cgroup三者一个联系
+//能表明cgroup_subsys_state cgroup_subsys cgroup三者一个联系 csnote
 static void init_and_link_css(struct cgroup_subsys_state *css,
 			      struct cgroup_subsys *ss, struct cgroup *cgrp)
 {
@@ -5868,7 +5868,7 @@ static void init_and_link_css(struct cgroup_subsys_state *css,
 	atomic_set(&css->online_cnt, 0);
 
 	if (cgroup_parent(cgrp)) {
-		css->parent = cgroup_css(cgroup_parent(cgrp), ss);		//这里能表示cgroup_subsys_state是跟着cgroup建的
+		css->parent = cgroup_css(cgroup_parent(cgrp), ss);	//这里能表示cgroup_subsys_state是跟着cgroup建的 csnote 
 		css_get(css->parent);
 	}
 
