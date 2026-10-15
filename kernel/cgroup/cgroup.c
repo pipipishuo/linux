@@ -3456,6 +3456,7 @@ static bool css_visible(struct cgroup_subsys_state *css)
  * been processed already aren't cleaned up.  The caller is responsible for
  * cleaning up with cgroup_apply_control_disable().
  */
+ //什么用不好说  但最起码能够观察到cgroup的组织形式
 static int cgroup_apply_control_enable(struct cgroup *cgrp)
 {
 	struct cgroup *dsct;
@@ -4908,7 +4909,7 @@ struct cgroup_subsys_state *css_next_child(struct cgroup_subsys_state *pos,
 	 * @next, if not pointing to the head, can be dereferenced and is
 	 * the next sibling.
 	 */
-	if (&next->sibling != &parent->children)
+	if (&next->sibling != &parent->children)				//非常经典的一个示例  next可能是被错误推导出来的  当parent->children.next指向自己时  
 		return next;
 	return NULL;
 }
@@ -4936,8 +4937,8 @@ struct cgroup_subsys_state *css_next_child(struct cgroup_subsys_state *pos,
  * responsibility to synchronize against on/offlining.
  */
 struct cgroup_subsys_state *
-css_next_descendant_pre(struct cgroup_subsys_state *pos,
-			struct cgroup_subsys_state *root)
+css_next_descendant_pre(struct cgroup_subsys_state *pos,	
+			struct cgroup_subsys_state *root)			//这么看css倒确实是以一棵树的形式组织的
 {
 	struct cgroup_subsys_state *next;
 
@@ -5848,6 +5849,7 @@ static void kill_css_finish_work_fn(struct work_struct *work)
 	css_put(css);
 }
 
+//能表明cgroup_subsys_state cgroup_subsys cgroup三者一个联系
 static void init_and_link_css(struct cgroup_subsys_state *css,
 			      struct cgroup_subsys *ss, struct cgroup *cgrp)
 {
@@ -5866,7 +5868,7 @@ static void init_and_link_css(struct cgroup_subsys_state *css,
 	atomic_set(&css->online_cnt, 0);
 
 	if (cgroup_parent(cgrp)) {
-		css->parent = cgroup_css(cgroup_parent(cgrp), ss);
+		css->parent = cgroup_css(cgroup_parent(cgrp), ss);		//这里能表示cgroup_subsys_state是跟着cgroup建的
 		css_get(css->parent);
 	}
 

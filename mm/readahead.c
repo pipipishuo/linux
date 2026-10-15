@@ -622,7 +622,7 @@ void page_cache_sync_ra(struct readahead_control *ractl,
 	/*
 	 * A start of file, oversized read, or sequential cache miss:
 	 * trivial case: (index - prev_index) == 1
-	 * unaligned reads: (index - prev_index) == 0
+	 * unaligned reads: (index - prev_index) == 0					//看样子也只是做一些ra的参数配置
 	 */
 	if (!index || req_count > max_pages || index - prev_index <= 1UL) {
 		ra->start = index;
