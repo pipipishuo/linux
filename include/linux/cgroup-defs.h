@@ -172,7 +172,7 @@ struct cgroup_file {
 };
 
 /*
- * Per-subsystem/per-cgroup state maintained by the system.  This is the
+ * Per-subsystem/per-cgroup state maintained by the system.  This is the //说的很明显  这个被嵌入到各个控制器中
  * fundamental structural building block that controllers deal with.
  *
  * Fields marked with "PI:" are public and immutable and may be accessed
@@ -243,7 +243,7 @@ struct cgroup_subsys_state {
 	 * PI: the parent css.	Placed here for cache proximity to following
 	 * fields of the containing structure.
 	 */
-	struct cgroup_subsys_state *parent;
+	struct cgroup_subsys_state *parent;	//不是  你为什么还有层级啊  他有层级是正常的
 
 	/*
 	 * Keep track of total numbers of visible descendant CSSes.
@@ -283,6 +283,7 @@ struct cgroup_subsys_state {
  * list_add()/del() can bump the reference count on the entire cgroup
  * set for a task.
  */
+ //一组cgroup_subsys_state 没毛病
 struct css_set {
 	/*
 	 * Set of subsystem states, one for each subsystem. This array is
@@ -485,7 +486,7 @@ struct cgroup_freezer_state {
 
 struct cgroup {
 	/* self css with NULL ->ss, points back to this cgroup */
-	struct cgroup_subsys_state self;
+	struct cgroup_subsys_state self;				//这个self属实让我看不太懂了  感觉像内部变量 哦哦 应该是这意思  其实核心是cgroup_subsys_state
 
 	unsigned long flags;		/* "unsigned long" so bitops work */
 
