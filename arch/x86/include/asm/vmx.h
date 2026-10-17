@@ -20,7 +20,7 @@
 #include <asm/trapnr.h>
 #include <asm/vmxfeatures.h>
 
-struct vmcs_hdr {
+struct vmcs_hdr {					//这不就跟刚才看的手册对上了吗
 	u32 revision_id:31;
 	u32 shadow_vmcs:1;
 };
