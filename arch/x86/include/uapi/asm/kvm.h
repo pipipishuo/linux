@@ -145,7 +145,7 @@ struct kvm_dtable {
 
 
 /* for KVM_GET_SREGS and KVM_SET_SREGS */
-struct kvm_sregs {
+struct kvm_sregs {					//寄存器数据
 	/* out (KVM_GET_SREGS) / in (KVM_SET_SREGS) */
 	struct kvm_segment cs, ds, es, fs, gs, ss;
 	struct kvm_segment tr, ldt;

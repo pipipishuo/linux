@@ -1205,7 +1205,7 @@ struct fown_struct {
  * When this structure is passed to ->readahead(), the "most recent"
  * readahead means the current readahead.
  */
-struct file_ra_state {
+struct file_ra_state {				//就是预读取的结构量 嗯~  非常精辟
 	pgoff_t start;
 	unsigned int size;
 	unsigned int async_size;
