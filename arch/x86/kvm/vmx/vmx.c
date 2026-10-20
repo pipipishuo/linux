@@ -7449,7 +7449,7 @@ fastpath_t vmx_vcpu_run(struct kvm_vcpu *vcpu, u64 run_flags)
 
 	kvm_wait_lapic_expire(vcpu);
 
-	/* The actual VMENTER/EXIT is in the .noinstr.text section. */
+	/* The actual VMENTER/EXIT is in the .noinstr.text section. */			//从这进入虚拟机那这么说之前的都相当于构建上下文呗
 	vmx_vcpu_enter_exit(vcpu, __vmx_vcpu_enter_flags(vmx));
 
 	/* All fields are clean at this point */

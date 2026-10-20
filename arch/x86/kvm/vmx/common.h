@@ -33,14 +33,14 @@ union vmx_exit_reason {
 	u32 full;
 };
 
-struct vcpu_vt {
+struct vcpu_vt {				//感觉这驴唇不对马嘴的往一起放
 	/* Posted interrupt descriptor */
 	struct pi_desc pi_desc;
 
 	/* Used if this vCPU is waiting for PI notification wakeup. */
 	struct list_head pi_wakeup_list;
 
-	union vmx_exit_reason exit_reason;
+	union vmx_exit_reason exit_reason;			//退出原因你来记录 那别的呢
 
 	unsigned long	exit_qualification;
 	u32		exit_intr_info;

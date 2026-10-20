@@ -689,13 +689,13 @@ static void ext4_fc_submit_bh(struct super_block *sb, bool is_tail)
  * new block is from jbd2 and CRC is updated to reflect the padding
  * we added.
  */
-static u8 *ext4_fc_reserve_space(struct super_block *sb, int len, u32 *crc)
+static u8 *ext4_fc_reserve_space(struct super_block *sb, int len, u32 *crc)			//想必len就是要预留空间的大小
 {
 	struct ext4_fc_tl tl;
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
 	struct buffer_head *bh;
 	int bsize = sbi->s_journal->j_blocksize;
-	int ret, off = sbi->s_fc_bytes % bsize;
+	int ret, off = sbi->s_fc_bytes % bsize;			//算偏移  看来不是按照块去弄了
 	int remaining;
 	u8 *dst;
 
@@ -703,16 +703,16 @@ static u8 *ext4_fc_reserve_space(struct super_block *sb, int len, u32 *crc)
 	 * If 'len' is too long to fit in any block alongside a PAD tlv, then we
 	 * cannot fulfill the request.
 	 */
-	if (len > bsize - EXT4_FC_TAG_BASE_LEN)
+	if (len > bsize - EXT4_FC_TAG_BASE_LEN)		//len有最大限制
 		return NULL;
 
 	if (!sbi->s_fc_bh) {
-		ret = jbd2_fc_get_buf(EXT4_SB(sb)->s_journal, &bh);
+		ret = jbd2_fc_get_buf(EXT4_SB(sb)->s_journal, &bh);//获取一页
 		if (ret)
 			return NULL;
 		sbi->s_fc_bh = bh;
 	}
-	dst = sbi->s_fc_bh->b_data + off;
+	dst = sbi->s_fc_bh->b_data + off;						//计算目标位置
 
 	/*
 	 * Allocate the bytes in the current block if we can do so while still
@@ -720,7 +720,7 @@ static u8 *ext4_fc_reserve_space(struct super_block *sb, int len, u32 *crc)
 	 */
 	remaining = bsize - EXT4_FC_TAG_BASE_LEN - off;
 	if (len <= remaining) {
-		sbi->s_fc_bytes += len;
+		sbi->s_fc_bytes += len;								//这种情况最好了加个偏移过去就好了  看样子s_fc_bytes就是用来记载字节总用量
 		return dst;
 	}
 
@@ -741,7 +741,7 @@ static u8 *ext4_fc_reserve_space(struct super_block *sb, int len, u32 *crc)
 	if (ret)
 		return NULL;
 	sbi->s_fc_bh = bh;
-	sbi->s_fc_bytes += bsize - off + len;
+	sbi->s_fc_bytes += bsize - off + len;		//看样子s_fc_bytes就是用来记载字节总用量  连上面置0的那段也都加上了
 	return sbi->s_fc_bh->b_data;
 }
 
@@ -794,7 +794,7 @@ static int ext4_fc_write_tail(struct super_block *sb, u32 crc)
 
 /*
  * Adds tag, length, value and updates CRC. Returns true if tlv was added.
- * Returns false if there's not enough space.
+ * Returns false if there's not enough space.		//顾名思义  是按照tag-val对来添加的一个tag 一个value
  */
 static bool ext4_fc_add_tlv(struct super_block *sb, u16 tag, u16 len, u8 *val,
 			   u32 *crc)
@@ -815,7 +815,7 @@ static bool ext4_fc_add_tlv(struct super_block *sb, u16 tag, u16 len, u8 *val,
 	return true;
 }
 
-/* Same as above, but adds dentry tlv. */
+/* Same as above, but adds dentry tlv. 没错  和上面一样只不过是数据结构变了变*/
 static bool ext4_fc_add_dentry_tlv(struct super_block *sb, u32 *crc,
 				   struct ext4_fc_dentry_update *fc_dentry)
 {

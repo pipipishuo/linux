@@ -356,7 +356,7 @@ retry:
 	rcu_read_unlock();
 
 	/* Check if the vma we locked is the right one. */
-	if (unlikely(address < vma->vm_start || address >= vma->vm_end)) {
+	if (unlikely(address < vma->vm_start || address >= vma->vm_end)) {				//点好 找到这个了  看这个地址是否之前是被malloc分过了吗  
 		vma_end_read(vma);
 		goto inval;
 	}

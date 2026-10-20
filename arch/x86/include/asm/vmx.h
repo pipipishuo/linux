@@ -208,7 +208,7 @@ static inline int vmx_misc_mseg_revid(u64 vmx_misc)
 	return (vmx_misc & GENMASK_ULL(63, 32)) >> 32;
 }
 
-/* VMCS Encodings */
+/* VMCS Encodings */			//查看手册附录 FIELD ENCODING IN VMCS章
 enum vmcs_field {
 	VIRTUAL_PROCESSOR_ID            = 0x00000000,
 	POSTED_INTR_NV                  = 0x00000002,
@@ -333,7 +333,7 @@ enum vmcs_field {
 	PLE_WINDOW                      = 0x00004022,
 	NOTIFY_WINDOW                   = 0x00004024,
 	VM_INSTRUCTION_ERROR            = 0x00004400,
-	VM_EXIT_REASON                  = 0x00004402,
+	VM_EXIT_REASON                  = 0x00004402,//查看手册附录 FIELD ENCODING IN VMCS章
 	VM_EXIT_INTR_INFO               = 0x00004404,
 	VM_EXIT_INTR_ERROR_CODE         = 0x00004406,
 	IDT_VECTORING_INFO_FIELD        = 0x00004408,

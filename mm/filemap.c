@@ -846,7 +846,7 @@ void replace_page_cache_folio(struct folio *old, struct folio *new)
 EXPORT_SYMBOL_GPL(replace_page_cache_folio);
 
 noinline int __filemap_add_folio(struct address_space *mapping,
-		struct folio *folio, pgoff_t index, gfp_t gfp, void **shadowp)
+		struct folio *folio, pgoff_t index, gfp_t gfp, void **shadowp)			//这个有空也能研究下 folio与xarray 到底用了xarray的几个接口
 {
 	XA_STATE_ORDER(xas, &mapping->i_pages, index, folio_order(folio));
 	bool huge;
@@ -2742,7 +2742,7 @@ retry:
 	}
 
 	folio = fbatch->folios[folio_batch_count(fbatch) - 1];
-	if (folio_test_readahead(folio)) {
+	if (folio_test_readahead(folio)) {						//真真正正体现预读的就是这两句代码了 
 		err = filemap_readahead(iocb, filp, mapping, folio, last_index);
 		if (err)
 			goto err;

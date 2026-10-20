@@ -326,7 +326,7 @@ struct kvm_mmio_fragment {
 	unsigned int len;
 };
 
-struct kvm_vcpu {
+struct kvm_vcpu {			//这么看这个结构体是关于cpu的  也对  管处理cpu的虚拟化  所以会嵌入到vcpu_vmx这里
 	struct kvm *kvm;
 #ifdef CONFIG_PREEMPT_NOTIFIERS
 	struct preempt_notifier preempt_notifier;

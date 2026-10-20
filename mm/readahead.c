@@ -244,7 +244,7 @@ void page_cache_ra_unbounded(struct readahead_control *ractl,
 
 	trace_page_cache_ra_unbounded(mapping->host, index, nr_to_read,
 				      lookahead_size);
-	index = mapping_align_index(mapping, index);
+	index = mapping_align_index(mapping, index);			//给index对对齐
 
 	/*
 	 * As iterator `i` is aligned to min_nrpages, round_up the
@@ -252,7 +252,7 @@ void page_cache_ra_unbounded(struct readahead_control *ractl,
 	 * index that only has lookahead or "async_region" to set the
 	 * readahead flag.
 	 */
-	if (lookahead_size <= nr_to_read) {
+	if (lookahead_size <= nr_to_read) {						
 		unsigned long ra_folio_index;
 
 		ra_folio_index = round_up(readahead_index(ractl) +
@@ -281,7 +281,7 @@ void page_cache_ra_unbounded(struct readahead_control *ractl,
 			 */
 			read_pages(ractl);
 			ractl->_index += min_nrpages;
-			i = ractl->_index - index;
+			i = ractl->_index - index;					//嗯很有道理  i只表示offset  index不带动的都
 			continue;
 		}
 
@@ -293,7 +293,7 @@ void page_cache_ra_unbounded(struct readahead_control *ractl,
 		ret = filemap_add_folio(mapping, folio, index + i, gfp_mask);
 		if (ret < 0) {
 			folio_put(folio);
-			if (ret == -ENOMEM)
+			if (ret == -ENOMEM)							//只有一个ENOMEM才值得不继续读吗  其余的错误呢？
 				break;
 			read_pages(ractl);
 			ractl->_index += min_nrpages;
@@ -312,7 +312,7 @@ void page_cache_ra_unbounded(struct readahead_control *ractl,
 	 * uptodate then the caller will launch read_folio again, and
 	 * will then handle the error.
 	 */
-	read_pages(ractl);
+	read_pages(ractl);				//还是把剩余的都读了  可这不就跟page_cache_ra_order功能重复了吗
 	memalloc_nofs_restore(nofs);
 }
 EXPORT_SYMBOL_GPL(page_cache_ra_unbounded);
@@ -327,7 +327,7 @@ static void do_page_cache_ra(struct readahead_control *ractl,
 		unsigned long nr_to_read, unsigned long lookahead_size)
 {
 	struct address_space *mapping = ractl->mapping;
-	unsigned long index = readahead_index(ractl);
+	unsigned long index = readahead_index(ractl);				//此时这个值应该就是指向还没读的页索引
 	loff_t isize = i_size_read(mapping->host);
 	pgoff_t end_index;	/* The last page we want to read */
 
@@ -344,8 +344,8 @@ static void do_page_cache_ra(struct readahead_control *ractl,
 		lookahead_size = 0;
 	}
 
-	filemap_invalidate_lock_shared(mapping);
-	page_cache_ra_unbounded(ractl, nr_to_read, lookahead_size);
+	filemap_invalidate_lock_shared(mapping);				//上面整体来说就是做了些范围的判断嘛
+	page_cache_ra_unbounded(ractl, nr_to_read, lookahead_size);	//看名字来说这个函数是预读取无上限的？
 	filemap_invalidate_unlock_shared(mapping);
 }
 

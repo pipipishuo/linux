@@ -16,7 +16,7 @@
 #define NR_PIR_VECTORS	256
 #define NR_PIR_WORDS	(NR_PIR_VECTORS / BITS_PER_LONG)
 
-/* Posted-Interrupt Descriptor */
+/* Posted-Interrupt Descriptor */		//应该是关于中断虚拟化的东西
 struct pi_desc {
 	unsigned long pir[NR_PIR_WORDS];     /* Posted interrupt requested */
 	union {
