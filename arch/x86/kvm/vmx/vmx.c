@@ -7321,7 +7321,7 @@ static noinstr void vmx_vcpu_enter_exit(struct kvm_vcpu *vcpu,
 {
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 
-	guest_state_enter_irqoff();
+	guest_state_enter_irqoff();				//这一步看不太懂
 
 	vmx_l1d_flush(vcpu);
 
