@@ -41,7 +41,7 @@ do {									\
  * The call to @cb is implicitly surrounded by a mutex, though for
  * efficiency the * function avoids taking it after the first call.
  */
-static inline int call_once(struct once *once, int (*cb)(struct once *))
+static inline int call_once(struct once *once, int (*cb)(struct once *))				//看不出来这个函数有啥用   噢噢噢噢保证只调用一次是吧  可以
 {
 	int r, state;
 
