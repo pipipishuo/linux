@@ -432,7 +432,7 @@ static noinstr void vmx_l1d_flush(struct kvm_vcpu *vcpu)
 		/* First ensure the pages are in the TLB */
 		"xorl	%%eax, %%eax\n"
 		".Lpopulate_tlb:\n\t"
-		"movzbl	(%[flush_pages], %%" _ASM_AX "), %%ecx\n\t"
+		"movzbl	(%[flush_pages], %%" _ASM_AX "), %%ecx\n\t"				//现在看就能看懂一些了  这个是把地址加到TLB中
 		"addl	$4096, %%eax\n\t"
 		"cmpl	%%eax, %[size]\n\t"
 		"jne	.Lpopulate_tlb\n\t"
@@ -441,7 +441,7 @@ static noinstr void vmx_l1d_flush(struct kvm_vcpu *vcpu)
 		/* Now fill the cache */
 		"xorl	%%eax, %%eax\n"
 		".Lfill_cache:\n"
-		"movzbl	(%[flush_pages], %%" _ASM_AX "), %%ecx\n\t"
+		"movzbl	(%[flush_pages], %%" _ASM_AX "), %%ecx\n\t"				//这个是填l1d
 		"addl	$64, %%eax\n\t"
 		"cmpl	%%eax, %[size]\n\t"
 		"jne	.Lfill_cache\n\t"
@@ -482,7 +482,7 @@ static const struct kernel_param_ops vmentry_l1d_flush_ops = {
 };
 module_param_cb(vmentry_l1d_flush, &vmentry_l1d_flush_ops, NULL, 0644);
 
-static __always_inline void vmx_disable_fb_clear(struct vcpu_vmx *vmx)
+static __always_inline void vmx_disable_fb_clear(struct vcpu_vmx *vmx)				
 {
 	u64 msr;
 
@@ -1271,7 +1271,7 @@ static inline void pt_save_msr(struct pt_ctx *ctx, u32 addr_range)
 	}
 }
 
-static void pt_guest_enter(struct vcpu_vmx *vmx)
+static void pt_guest_enter(struct vcpu_vmx *vmx)//pt是何意味？
 {
 	if (vmx_pt_mode_is_system())
 		return;
@@ -1283,7 +1283,7 @@ static void pt_guest_enter(struct vcpu_vmx *vmx)
 	rdmsrq(MSR_IA32_RTIT_CTL, vmx->pt_desc.host.ctl);
 	if (vmx->pt_desc.guest.ctl & RTIT_CTL_TRACEEN) {
 		wrmsrq(MSR_IA32_RTIT_CTL, 0);
-		pt_save_msr(&vmx->pt_desc.host, vmx->pt_desc.num_address_ranges);
+		pt_save_msr(&vmx->pt_desc.host, vmx->pt_desc.num_address_ranges);	//保存宿主机的msr  导入客户机的msr
 		pt_load_msr(&vmx->pt_desc.guest, vmx->pt_desc.num_address_ranges);
 	}
 }
@@ -7321,7 +7321,7 @@ static noinstr void vmx_vcpu_enter_exit(struct kvm_vcpu *vcpu,
 {
 	struct vcpu_vmx *vmx = to_vmx(vcpu);
 
-	guest_state_enter_irqoff();				//这一步看不太懂
+	guest_state_enter_irqoff();				//这一步看不太懂  关于rcu的都不太懂
 
 	vmx_l1d_flush(vcpu);
 
@@ -7397,7 +7397,7 @@ fastpath_t vmx_vcpu_run(struct kvm_vcpu *vcpu, u64 run_flags)
 	 */
 	WARN_ON_ONCE(vmx->nested.need_vmcs12_to_shadow_sync);
 
-	if (kvm_register_is_dirty(vcpu, VCPU_REGS_RSP))
+	if (kvm_register_is_dirty(vcpu, VCPU_REGS_RSP))						//导入两个寄存器   不应该那几个都导入吗？
 		vmcs_writel(GUEST_RSP, vcpu->arch.regs[VCPU_REGS_RSP]);
 	if (kvm_register_is_dirty(vcpu, VCPU_REG_RIP))
 		vmcs_writel(GUEST_RIP, vcpu->arch.rip);
