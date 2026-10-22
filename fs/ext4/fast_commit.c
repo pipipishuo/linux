@@ -1428,7 +1428,7 @@ static int ext4_fc_perform_commit(journal_t *journal, tid_t commit_tid)
 	if (journal->j_fs_dev != journal->j_dev)
 		blkdev_issue_flush(journal->j_fs_dev);
 
-	blk_start_plug(&plug);
+	blk_start_plug(&plug);				//写入的不是真数据  都是tlv
 	alloc_ctx = ext4_fc_lock(sb);
 	/* Step 6: Write fast commit blocks to disk. */
 	if (sbi->s_fc_bytes == 0) {
