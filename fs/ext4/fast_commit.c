@@ -1604,7 +1604,7 @@ restart_fc:
 
 	/*
 	 * After establishing journal barrier via jbd2_fc_begin_commit(), check
-	 * if we are fast commit ineligible.
+	 * if we are fast commit ineligible.			//这里才是真正的避开的地方
 	 */
 	if (ext4_test_mount_flag(sb, EXT4_MF_FC_INELIGIBLE)) {
 		status = EXT4_FC_STATUS_INELIGIBLE;
