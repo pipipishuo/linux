@@ -8967,7 +8967,7 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu)
 	if (r)
 		return r;
 
-	vcpu_load(vcpu);
+	vcpu_load(vcpu);		//先导入  
 	kvm_sigset_activate(vcpu);
 	kvm_run->flags = 0;
 	kvm_load_guest_fpu(vcpu);
@@ -9061,7 +9061,7 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu)
 	if (r <= 0)
 		goto out;
 
-	r = vcpu_run(vcpu);
+	r = vcpu_run(vcpu);//这里面在设置
 
 out:
 	kvm_put_guest_fpu(vcpu);

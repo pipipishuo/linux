@@ -1124,7 +1124,7 @@ repeat:
 	 * Subtle point, though: if this is a get_undo_access, then we will be
 	 * relying on the frozen_data to contain the new value of the
 	 * committed_data record after the transaction, so we HAVE to force the
-	 * frozen_data copy in that case.
+	 * frozen_data copy in that case. 跨transaction才会复制保存它 而且只能复制一次  还真得时时常看  要不然会忘哈哈  
 	 */
 	if (jh->b_jlist == BJ_Metadata || force_copy) {
 		JBUFFER_TRACE(jh, "generate frozen data");

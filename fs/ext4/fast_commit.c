@@ -1430,7 +1430,7 @@ static int ext4_fc_perform_commit(journal_t *journal, tid_t commit_tid)
 
 	blk_start_plug(&plug);				//写入的不是真数据  都是tlv
 	alloc_ctx = ext4_fc_lock(sb);
-	/* Step 6: Write fast commit blocks to disk. */
+	/* Step 6: Write fast commit blocks to disk. */			//总体来说这就是写tlv了
 	if (sbi->s_fc_bytes == 0) {
 		/*
 		 * Step 6.1: Add a head tag only if this is the first fast

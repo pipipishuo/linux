@@ -4656,7 +4656,7 @@ static u32 vmx_exec_control(struct vcpu_vmx *vmx)
 	 * Not used by KVM, but fully supported for nesting, i.e. are allowed in
 	 * vmcs12 and propagated to vmcs02 when set in vmcs12.
 	 */
-	exec_control &= ~(CPU_BASED_RDTSC_EXITING |
+	exec_control &= ~(CPU_BASED_RDTSC_EXITING |			//不用这几个值
 			  CPU_BASED_USE_IO_BITMAPS |
 			  CPU_BASED_MONITOR_TRAP_FLAG |
 			  CPU_BASED_PAUSE_EXITING);
