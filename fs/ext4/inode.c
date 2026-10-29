@@ -7806,7 +7806,7 @@ static int ext4_block_page_mkwrite(struct inode *inode, struct folio *folio,
 		block_commit_write(folio, 0, len);
 		folio_mark_dirty(folio);
 	} else {
-		ret = ext4_journal_folio_buffers(handle, folio, len);
+		ret = ext4_journal_folio_buffers(handle, folio, len);			//堵死mmap在journal的作用
 		if (ret)
 			goto out_error;
 	}

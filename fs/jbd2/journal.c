@@ -1026,8 +1026,8 @@ int jbd2_journal_get_log_tail(journal_t *journal, tid_t *tid,
 
 	read_lock(&journal->j_state_lock);
 	spin_lock(&journal->j_list_lock);
-	transaction = journal->j_checkpoint_transactions;
-	if (transaction) {
+	transaction = journal->j_checkpoint_transactions;//应该是有足够多的checkpoint transaction
+	if (transaction) {		//四个状态依次往上走  先看checkpoint 然后commit 然后 run 最后啥也没有的
 		*tid = transaction->t_tid;
 		*block = transaction->t_log_start;
 	} else if ((transaction = journal->j_committing_transaction) != NULL) {
@@ -1040,7 +1040,7 @@ int jbd2_journal_get_log_tail(journal_t *journal, tid_t *tid,
 		*tid = journal->j_transaction_sequence;
 		*block = journal->j_head;
 	}
-	ret = tid_gt(*tid, journal->j_tail_sequence);
+	ret = tid_gt(*tid, journal->j_tail_sequence);					//什么时候才会返回false呢  按我的思路应该是  checkpoint 小于commit了 这个也常见吧  堆了一堆	
 	spin_unlock(&journal->j_list_lock);
 	read_unlock(&journal->j_state_lock);
 

@@ -434,7 +434,7 @@ void jbd2_journal_commit_transaction(journal_t *journal)
 	J_ASSERT(journal->j_committing_transaction == NULL);
 
 	write_lock(&journal->j_state_lock);
-	journal->j_flags |= JBD2_FULL_COMMIT_ONGOING;
+	journal->j_flags |= JBD2_FULL_COMMIT_ONGOING;		//这个与jbd2_fc_begin_commit的那个journal->j_flags |= JBD2_FAST_COMMIT_ONGOING形成牵制了
 	while (journal->j_flags & JBD2_FAST_COMMIT_ONGOING) {
 		DEFINE_WAIT(wait);
 
@@ -1093,7 +1093,7 @@ restart_loop:
 		journal->j_checkpoint_transactions = commit_transaction;
 		commit_transaction->t_cpnext = commit_transaction;
 		commit_transaction->t_cpprev = commit_transaction;
-	} else {
+	} else {//这里就是j_checkpoint_transactions是个链表的证据（很标准的插入链表操作）也对 很符合逻辑
 		commit_transaction->t_cpnext =
 			journal->j_checkpoint_transactions;
 		commit_transaction->t_cpprev =

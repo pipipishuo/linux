@@ -2998,7 +2998,7 @@ generic_file_read_iter(struct kiocb *iocb, struct iov_iter *iter)
 	if (!count)
 		return 0; /* skip atime */
 
-	if (iocb->ki_flags & IOCB_DIRECT) {
+	if (iocb->ki_flags & IOCB_DIRECT) {			//已经很明显了  我咋看不出来呢  这个意思就是direct不走pagecache  归根结底还是对filemap_read不熟悉  也对 filemap 字面意思不就是文件映射吗
 		struct file *file = iocb->ki_filp;
 		struct address_space *mapping = file->f_mapping;
 		struct inode *inode = mapping->host;

@@ -318,17 +318,17 @@ out:
  * This is the only part of the journaling code which really needs to be
  * aware of transaction aborts.  Checkpointing involves writing to the
  * main filesystem area rather than to the journal, so it can proceed
- * even in abort state, but we must not update the super block if
+ * even in abort state（很清晰的想法）, but we must not update the super block if
  * checkpointing may have failed.  Otherwise, we would lose some metadata
  * buffers which should be written-back to the filesystem.
  */
 
-int jbd2_cleanup_journal_tail(journal_t *journal)
+int jbd2_cleanup_journal_tail(journal_t *journal)			//说白了就是更新一下
 {
 	tid_t		first_tid;
 	unsigned long	blocknr;
 
-	if (is_journal_aborted(journal))
+	if (is_journal_aborted(journal))//应该是常规检查
 		return -EIO;
 
 	if (!jbd2_journal_get_log_tail(journal, &first_tid, &blocknr))

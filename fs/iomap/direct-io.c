@@ -1020,7 +1020,7 @@ ssize_t __iomap_dio_read_simple(struct kiocb *iocb, struct iov_iter *iter,
 
 	ret = bio_iov_iter_get_pages(bio, iter, BIO_MAX_SIZE,
 			bdev_dma_alignment(bio->bi_bdev),
-			alignment - 1);
+			alignment - 1);		//目前看这是关键一步把iter的page抽给bio 等着将来读到的好写进去？
 	if (unlikely(ret))
 		goto out_bio_put;
 
